@@ -1,0 +1,42 @@
+persistentVolumeClaim:
+  enabled: true
+  name: mathapp-development-pv-claim
+  accessModes: ReadWriteOnce
+  storage: 10Gi
+
+service:
+  port: 80
+  targetPort: 80
+  type: ClusterIP
+
+deployment:
+  replicas: 3
+
+container:
+  image: waellatiri1993/mathapp-development:latest
+  resources:
+    requests:
+      memory: "100Mi"
+      cpu: "100m"
+    limits:
+      memory: "100Mi"
+      cpu: "100m"
+  ports:
+    containerPort: 80
+    name: http
+
+volumeMounts:
+  name: mathapp-development-persistent-storage
+  mountPath: /tmp/data
+
+volume:
+  name: mathapp-development-persistent-storage
+  claimName: mathapp-development-pv-claim
+
+ingress:
+  enabled: true
+  host: waellatiri-math.horizon-workspaces.com
+  ingressClassName: nginx
+  pathType: ImplementationSpecific
+  clusterIssuer: letsencrypt-prod
+  secretName: mathapp-development-tls
